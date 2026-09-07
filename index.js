@@ -1,11 +1,14 @@
 const express = require("express");
-
+const jwt = require("jsonwebtoken");
 // username , password | USERS table
 // organization  | ORGANIZATIONS table
 // boards | BOARDS table
 // issues | ISSUES table
 
-let userId = 0;
+let USER_ID = 1;
+let ORGANIZATION_ID = 1;
+let BOARDS_ID = 1;
+let ISSUES_ID = 1;
 
 const USERS = [
   {
@@ -44,62 +47,70 @@ app.get("/", (req, res) => {
   });
 });
 
-app.post("/signup" , (req , res) => {
-    const {username , password} = req.body;
+app.post("/signup", (req, res) => {
+  const { username, password } = req.body;
 
-    const userExist =  USERS.find((u) => u.username === username)
+  const userExists = USERS.find((u) => u.username === username);
 
-    USERS.push({
-        id : userId++,
-        username,
-        password
-    })
-    res.json({
-        message : "signup successfully"
-    })
-})
+  if (userExists) {
+    res.status(411).json({
+      message: "User with this username already exists",
+    });
+    return;
+  }
 
-app.post("/signin" , (req , res) => {
-    
-})
+  USERS.push({
+    id: USER_ID++,
+    username,
+    password,
+  });
+  res.json({
+    message: "signup successfully",
+  });
+});
 
-app.post("/organization" , (req , res) => {
-    
-})
+app.post("/signin", (req, res) => {
+  const { username, password } = req.body;
 
-app.post("/add-member-to-organization" , (req , res) => {
-    
-})
+  const userExists = USERS.find(
+    (u) => u.username === username && u.password === password,
+  );
 
-app.post("/board" , (req , res) => {
-    
-})
+  if (!userExists) {
+    res.status(403).json({
+      message: "Incorrect credentials",
+    });
+  }
 
-app.post("/issue" , (req , res) => {
-    
-})
+  //create jwt for the user
+  const token = jwt.sign(
+    {
+      userId: userExists.id,
+    },
+    "secret123",
+  );
+  res.json({
+    token,
+  });
+});
 
-app.get("/boards/:organizationid" ,(req , res) => {
+app.post("/organization", (req, res) => {});
 
-})
+app.post("/add-member-to-organization", (req, res) => {});
 
-app.get("/issues" ,(req , res) => {
+app.post("/board", (req, res) => {});
 
-})
+app.post("/issue", (req, res) => {});
 
-app.get("/members" ,(req , res) => {
+app.get("/boards/:organizationid", (req, res) => {});
 
-})
+app.get("/issues", (req, res) => {});
 
-app.put("/issues/:issueId" ,(req ,res) => {
+app.get("/members", (req, res) => {});
 
-})
+app.put("/issues/:issueId", (req, res) => {});
 
-app.delete("/member" , (req , res) => {
-  
-})
-
-
+app.delete("/member", (req, res) => {});
 
 app.listen(3000, () => {
   console.log("server is running on port : 3000");
