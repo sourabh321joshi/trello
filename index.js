@@ -63,6 +63,42 @@ app.post("/signin" , (req , res) => {
     
 })
 
+app.post("/organization" , (req , res) => {
+    
+})
+
+app.post("/add-member-to-organization" , (req , res) => {
+    
+})
+
+app.post("/board" , (req , res) => {
+    
+})
+
+app.post("/issue" , (req , res) => {
+    
+})
+
+app.get("/boards/:organizationid" ,(req , res) => {
+
+})
+
+app.get("/issues" ,(req , res) => {
+
+})
+
+app.get("/members" ,(req , res) => {
+
+})
+
+app.put("/issues/:issueId" ,(req ,res) => {
+
+})
+
+app.delete("/member" , (req , res) => {
+  
+})
+
 
 
 app.listen(3000, () => {
