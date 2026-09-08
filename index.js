@@ -1,5 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const { authMiddleware } = require("./middleware");
 // username , password | USERS table
 // organization  | ORGANIZATIONS table
 // boards | BOARDS table
@@ -94,9 +95,26 @@ app.post("/signin", (req, res) => {
   });
 });
 
-app.post("/organization", (req, res) => {});
+app.post("/organization", authMiddleware , (req, res) => {
+      const userId = req.userId;
 
-app.post("/add-member-to-organization", (req, res) => {});
+      ORGANIZATIONS.push({
+        id : ORGANIZATION_ID++,
+        title : req.body.title,
+        description : req.body.description,
+        admin : userId,
+        members : []
+      })
+
+      res.json({
+        message : "Org created",
+        id : ORGANIZATION_ID - 1
+      })
+});
+
+app.post("/add-member-to-organization",authMiddleware , (req, res) => {
+  
+});
 
 app.post("/board", (req, res) => {});
 
