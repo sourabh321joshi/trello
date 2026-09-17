@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const { authMiddleware } = require("./middleware");
-const { userModel, organizationModel } = require("./models");
+const { userModel, organizationModel, boardModel } = require("./models");
 
 // username , password | USERS table
 // organization  | ORGANIZATIONS table
@@ -197,7 +197,43 @@ app.post("/add-member-to-organization", authMiddleware, async (req, res) => {
   });
 });
 
-app.post("/board", (req, res) => {});
+app.post("/board", authMiddleware, async (req, res) => {
+  const userId = req.userId;
+  const { organizationId, title, description } = req.body;
+
+  const organization = await organizationModel.findOne({
+    _id: organizationId,
+  });
+
+  if (!organization) {
+    return res.status(411).json({
+      message: "This organization doesn't exist",
+    });
+  }
+
+  const isAdmin = organization.admin.toString() === userId;
+  const isMember = organization.member.some(
+    (memberId) => memberId.toString() === userId,
+  );
+
+  if (!isAdmin && !isMember) {
+    return res.status(403).json({
+      message: "You are not a member of this organization",
+    });
+  }
+
+  const newBoard = await boardModel.create({
+    title,
+    description,
+    organization: organizationId,
+    createdBy: userId,
+  });
+
+  res.json({
+    id: newBoard._id,
+    message: "Board created",
+  });
+});
 
 app.post("/issue", (req, res) => {});
 
